@@ -1,0 +1,20 @@
+@startuml SequenceVoiceRoom
+
+actor User
+boundary "" as Page
+boundary "" as Conf_Page
+control "" as Controller
+entity Payment
+entity Subscription
+actor Bank
+
+User -> Page: Select 
+Page -> Controller: Start 
+Controller -> Bank: Request 
+Bank --> Controller: Payment 
+Controller -> Payment: Save 
+Controller -> Subscription: Create 
+Controller --> Conf_Page: Show 
+Conf_Page --> User: Display 
+
+@enduml

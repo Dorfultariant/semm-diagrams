@@ -1,0 +1,27 @@
+@startuml
+hide circle 
+
+class User 
+class Podcast 
+class Subscription 
+class AudioRoom 
+class VoiceChat
+class Merchandise
+class Order 
+class OrderItem 
+class Payment 
+
+' Src for relationship x to y modeling: 
+' ' https://self-learning-java-tutorial.blogspot.com/2023/06/plantuml-draw-one-to-many-relationship.html
+Subscription --* Podcast : allows
+User *-- AudioRoom : contains
+AudioRoom *-- Podcast : plays in
+AudioRoom -- VoiceChat : has
+User *--* AudioRoom : participates in
+User -- Order : places
+Order --* OrderItem : includes
+OrderItem *-- Merchandise : refers to
+Order -- Payment : paid by
+Subscription -- Payment : paid by
+
+@enduml
