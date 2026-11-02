@@ -1,0 +1,30 @@
+@startuml VoiceRoomUseCase
+
+left to right direction
+
+actor "User"   as U
+actor "Admin"  as A
+
+rectangle "" {
+  usecase "" as UC1
+  usecase "" as UC2
+  usecase "" as UC3
+  usecase "" as UC4
+  usecase "" as UC5
+  usecase "" as UC6
+}
+
+''U --> UC1
+''U --> UC2
+U -- UC3
+U -- UC4
+U -- UC5
+U -- UC6
+
+G -- UC4
+G -- UC5
+
+UC3 <.. UC1 : extends
+UC3 <.. UC2 : extends
+
+@enduml
