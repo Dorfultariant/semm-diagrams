@@ -1,0 +1,48 @@
+@startuml ActivityMarketplacePurchase
+
+start
+
+:Navigate To Marketplace;
+:View Items;
+:Select Item;
+
+'' Alternative flow for out-of-stock
+if (Item in stock?) then (Yes)
+  :Add item to basket;
+else (No)
+  :Display out of stock message;
+  stop
+endif
+
+:Proceed to checkout;
+
+'' Alternative to authenticated from the getgo
+if (Authenticated?) then (Yes)
+else (No)
+  :Redirect to login;
+  :Authenticate user;
+endif
+
+'' Uncertain whether there should be a conditional to "cancel" if operation does not succeed
+repeat
+  :Add payment information;
+repeat while (Payment information insufficient?) is (Yes)
+
+:Accept terms and conditions;
+
+:Make purchase;
+
+:Process order;
+
+'' Alternative flow for receipt not updated instantly
+if (Receipt available?) then (Yes)
+  :View receipt;
+else (No)
+  :Display receipt delay message;
+  :Wait 10 minutes;
+  :View receipt;
+endif
+
+stop
+
+@enduml
