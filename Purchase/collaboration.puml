@@ -1,0 +1,34 @@
+@startuml CollaborationMarketplacePurchase
+
+'' Last example at the bottom of the forum, src: https://forum.plantuml.net/7500/how-can-i-create-collaboration-diagram
+
+'' each of the: entity, boundary, control are the objects
+'' The lines between the objects represent numbered messages
+'' The <&arrrow-....> are just symbols to indicate directional linking
+
+actor User as "user : AudioNow Customer"
+actor PaymentProvider as "paymentProvider : Payment System"
+
+boundary MarketplacePage as "marketplacePage : Marketplace Page"
+control PurchaseController as "purchaseController : PurchaseController"
+control AuthenticationService as "authenticationService : Authentication Service"
+entity Basket as "basket : Shopping Basket"
+entity Payment as "payment : PaymentRecord"
+entity Receipt as "receipt : ReceiptRecord"
+boundary ReceiptPage as "receiptPage : Receipt Page"
+
+User -> (MarketplacePage) : "1: openMarketplace()\n2: viewItems()\n3: addItemToBasket()\n4: proceedToCheckout()\n<&arrow-right>"
+(MarketplacePage) -left-> (Basket) : "3.1: addItem()\n3.2: basketUpdated()\n<&arrow-bottom>"
+(MarketplacePage) -up-> (AuthenticationService) : "5: verifyUser()\n6: authenticationSuccess()\n<&arrow-left>"
+(MarketplacePage) -down-> (PurchaseController) : "7: purchaseItems()\n<&arrow-bottom>"
+(PurchaseController) -down-> (PaymentProvider) : "8: requestPayment()\n9: paymentApproved()\n<&arrow-right>"
+(PurchaseController) -down-> (Payment) : "10: createPaymentRecord()\n<&arrow-bottom>"
+(PurchaseController) -right-> (Receipt) : "11: generateReceipt()\n<&arrow-right>"
+(PurchaseController) --> (ReceiptPage) : "12: showReceipt()\n<&arrow-bottom>"
+User <- (ReceiptPage) : "13: viewReceipt()\n<&arrow-top>"
+
+'' "Almost" readable
+
+@enduml
+
+

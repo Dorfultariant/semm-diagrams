@@ -1,0 +1,25 @@
+@startuml CollaborationVoiceRoom
+
+'' Last example at the bottom of the forum, src: https://forum.plantuml.net/7500/how-can-i-create-collaboration-diagram
+
+'' each of the: entity, boundary, control are the objects
+'' The lines between the objects represent numbered messages
+'' The <&arrrow-....> are just symbols to indicate directional linking
+
+actor User as "user : AudioNow Customer"
+boundary VoiceRoomPage as "voiceRoomPage : Voiceroom Page"
+control AuthenticationService as "authenticationService : Authentication Service"
+control VoiceRoomService as "voiceRoomService : VoiceRoom Service"
+control AudioService as "audioService : Audio Service"
+entity PodcastSession as "podcastSession : Podcast Session"
+
+'' Trust the process, and dont look at it or it will crumble
+User -> (VoiceRoomPage) : "1: openVoiceroom()\n2: joinVoiceroom()\n7: participateInDiscussion()\n11: leaveVoiceroom()\n<&arrow-right>"
+(VoiceRoomPage) -down-> (AuthenticationService) : "3: verifyUser()\n4: authenticationSuccess()\n<&arrow-bottom>"
+(VoiceRoomPage) -right-> (VoiceRoomService) : "5: connectToRoom()\n6: roomConnected()\n8: transmitVoice()\n9: receiveVoice()\n12: disconnectRoom()\n13: disconnectSuccess()\n<&arrow-right>"
+(VoiceRoomPage) --> (PodcastSession) : "6.1: beginPodcastStream()\n6.2: streamReady()\n<&arrow-bottom>"
+(VoiceRoomPage) -down-> (AudioService) : "10: adjustAudioSettings()\n<&arrow-bottom>"
+
+'' "Almost" readable
+
+@enduml
