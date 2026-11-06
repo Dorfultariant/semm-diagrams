@@ -1,0 +1,65 @@
+@startuml CommunicationMarketplacePurchase
+
+actor User as U
+
+boundary "Marketplace Page" as MP
+control "Authentication Service" as A
+control "Purchase Service" as PS
+entity "Basket" as B
+entity "Payment Service" as PAY
+entity "Receipt Service" as RS
+
+U --> MP : 1: viewMarketplaceItems()
+
+U --> MP : 2: addItemToBasket()
+MP --> B : 2.1: checkAvailability()
+B --> MP : 2.2: itemAvailable()
+MP --> B : 2.3: addItem()
+B --> MP : 2.4: itemAdded()
+
+B --> MP : 2A1.1: itemOutOfStock()
+MP --> U : 2A1.2: displayOutOfStockMessage()
+
+U --> MP : 3: checkout()
+MP --> A : 3.1: verifyUser()
+A --> MP : 3.2: authenticationSuccess()
+
+A --> MP : 3F1.1: authenticationFailure()
+MP --> U : 3F1.2: redirectToLogin()
+U --> MP : 3F1.3: submitCredentials()
+MP --> A : 3F1.4: authenticateUser()
+A --> MP : 3F1.5: authenticationSuccess()
+
+U --> MP : 4: addPaymentInformation()
+MP --> PAY : 4.1: validatePaymentInformation()
+PAY --> MP : 4.2: paymentInformationValid()
+
+PAY --> MP : 4F1.1: paymentInformationInvalid()
+MP --> U : 4F1.2: displayPaymentError()
+U --> MP : 4F1.3: updatePaymentInformation()
+MP --> PAY : 4F1.4: validatePaymentInformation()
+PAY --> MP : 4F1.5: paymentInformationValid()
+
+U --> MP : 5: acceptTermsAndConditions()
+
+U --> MP : 6: purchaseItems()
+MP --> PS : 6.1: createOrder()
+PS --> PAY : 6.2: processPayment()
+PAY --> PS : 6.3: paymentApproved()
+PS --> RS : 6.4: generateReceipt()
+RS --> PS : 6.5: receiptCreated()
+PS --> MP : 6.6: purchaseSuccessful()
+
+U --> MP : 7: viewReceipt()
+MP --> RS : 7.1: requestReceipt()
+RS --> MP : 7.2: receiptAvailable()
+MP --> U : 7.3: displayReceipt()
+
+RS --> MP : 7F1.1: receiptUnavailable()
+MP --> U : 7F1.2: displayWaitMessage()
+U --> MP : 7F1.3: retryViewReceipt()
+MP --> RS : 7F1.4: requestReceipt()
+RS --> MP : 7D1.5: receiptAvailable()
+MP --> U : 7F.6: displayReceipt()
+
+@enduml

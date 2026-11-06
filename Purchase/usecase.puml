@@ -1,0 +1,56 @@
+@startuml UseCaseMarketplacePurchase
+
+left to right direction
+
+actor "User" as U
+actor "Payment System" as P
+
+'' Process roughly derived from Acceptance criteria of the requirements: 
+'' Authentication and Item Purchase 
+rectangle "AudioNow" {
+  usecase "Authenticate" as UC1
+
+  usecase "View marketplace items" as UC2
+  usecase "Add item to basket" as UC3
+  usecase "Remove item from basket" as UC4
+  usecase "Checkout" as UC5
+  usecase "Add payment information" as UC6
+  usecase "Accept terms and conditions" as UC7
+  usecase "Purchase Items" as UC8
+  usecase "View receipts" as UC9
+  
+  usecase "Process payment" as UC10
+  usecase "Create receipt" as UC11
+
+}
+
+'' Direct main actions between case and actor
+U -- UC2
+U -- UC3
+U -- UC5
+U -- UC8
+U -- UC9
+
+P -left- UC10
+P -left- UC11
+
+'' When purchase is made, payment is processed and receipt is created 
+UC8 .-right-.> UC10 : <<include>>
+UC8 .-right-.> UC11 : <<include>>
+
+''src: https://blog.visual-paradigm.com/include-and-extend-use-cases/
+'' extending relations for the user interactable use-cases
+'' To be able to add items to basket, you need to view them first
+UC3 ..> UC2 : <<include>>
+'' Prerequisite for purchasing is adding the payment information
+UC8 ..> UC6 : <<include>>
+'' Prerequisite for purchasing is accepting conditions
+UC8 ..> UC7 : <<include>>
+'' Prerequisite for purchasing is moving through checkout
+UC8 ..> UC5 : <<include>>
+'' Prerequisite for moving to checkout is authentication 
+UC5 ..> UC1 : <<include>>
+'' If item can be added, it should be also removable but its not a prerequisite
+UC4 .-right-.> UC3 : <<extend>>
+
+@enduml

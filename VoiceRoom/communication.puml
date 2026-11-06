@@ -1,0 +1,61 @@
+@startuml CommunicationVoiceRoom
+
+actor User as U
+
+'' We focus on the joining part onwards, while the searching and selecting are part of this
+'' they have alternative flows which are shown separately, create, direct join, search
+
+boundary "Voiceroom page" as VP
+
+control "Authentication service" As A
+control "Voiceroom service" As VS
+control "Audio service" As AS
+
+entity "Podcast session" as S
+
+'' Initial joining
+U --> VP : 1: joinVoiceRoom()
+VP --> A : 1.1: verifyUser()
+A --> VP : 1.2: authenticationSuccess()
+VP --> VS : 1.3: connectToVoiceroom()
+VS --> VP : 1.4: roomConnectionSuccess()
+'' Failure in authentication
+A --> VP : 1F.1: authenticationFailure()
+VP --> U : 1F.2: redirectToLogin()
+U --> VP : 1F.3: submitCredentials()
+VP --> A : 1F.4: verifyUser()
+A --> VP : 1F.5: authenticationSuccess()
+VP --> VS : 1F.6: connectToVoiceroom()
+VS --> VP : 1F.7: roomConnectionSuccess()
+
+VP --> S : 1.5: beginPodcastStream()
+S --> VP : 1.6: playbackPodcast()
+
+'' Alternative ways to join
+U --> VP : 1A1: createVoiceroom()
+VP --> VS : 1A1.1: createRoom()
+VS --> VP : 1A1.2: roomCreationSuccess()
+
+U --> VP : 1A2: searchVoiceroom()
+VP --> VS : 1A2.1: queryAvailableRooms()
+VS --> VP : 1A2.2: listAvailableRooms()
+
+'' Session control and actions
+U --> VP : 2: participateInDiscussion()
+VP --> AS : 2.1: ensureMicrophoneAccess()
+AS --> VP: 2.2: microphoneReady()
+VP --> VS: 2.3: voiceSend()
+VS --> VP: 2.4: voiceReceive()
+VP --> U: 2.5: playbackAudio()
+
+'' Audio adjustment
+U --> VP : 3: audioControl()
+VP --> AS : 3.1: adjustAudioSettings()
+AS --> VP : 3.2: audioSettingsUpdated()
+
+'' Leaving voiceroom
+U --> VP : 4: leaveVoiceroom()
+VP --> VS : 4.1: disconnectFromSession()
+VS --> VP : 4.2: disconnectSuccess()
+
+@enduml

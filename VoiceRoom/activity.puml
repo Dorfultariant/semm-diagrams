@@ -1,0 +1,52 @@
+@startuml ActivityVoiceRoom
+
+start
+
+:Open AudioNow;
+
+'' MAIN POINTS
+'' Start from authentication
+'' Continue to room finding, joining or creating
+'' Adjust audio if necessary
+'' Participate as user wills
+'' Leave room
+
+if (IsAuthenticated) then (Yes)
+else (No)
+  :Register / Login;
+  :Authenticate user;
+endif
+
+if (Join existing room?) then (Yes)
+  if (Need to search?) then (Yes)
+    :Search voicerooms;
+    :View results;
+    :Select voiceroom;
+  else (No)
+    :Join friends room;
+  endif
+else (Create room)
+    :Create own voiceroom;
+    :Define voiceroom access;
+    :Name the voiceroom;
+endif
+
+:Join voiceroom;
+:Listen to podcast;
+
+if (Participate in discussion?) then (Yes)
+ if (Configure audio devices?) then (Yes)
+    :Configure microphone;
+    :Configure speakers;
+    :Adjust audio settings;
+  endif
+ 
+  :Speak with participants;
+endif
+
+:Continue listening;
+:Leave voiceroom;
+
+stop
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml UseCaseVoiceRoom
+
+left to right direction
+
+actor "User" as U
+
+'' Process roughly derived from Acceptance criteria of the requirements: 
+'' Authentication, Voiceroom Access and Voiceroom discussion
+rectangle "AudioNow" {
+  usecase "Authenticate" as UC1
+  usecase "Search voicerooms" as UC2
+  usecase "Join voiceroom" as UC3
+  usecase "Create voiceroom" as UC4
+
+  usecase "Participate in discussion" as UC5
+  usecase "Configure audio devices" as UC6
+  usecase "Leave voiceroom" as UC7
+}
+
+U -- UC3
+U -- UC4
+U -- UC5
+U -- UC7
+
+''src: https://blog.visual-paradigm.com/include-and-extend-use-cases/
+'' extending relations for the user interactable use-cases
+'' Prerequisite for joining or creating a voiceroom is authentication
+UC3 ..> UC1 : <<include>>
+UC4 ..> UC1 : <<include>>
+'' To participate in discussion, user must have joined voiceroom
+UC3 .-right-.> UC5 : <<include>>
+'' Search is not necessarily a prerequisite for joining a room as the user could create their own and join to a friend directly
+UC2 .-right-.> UC3 : <<extend>>
+'' Configuration of audiodevices is not necessarily a prerequisite but a 
+'' derivative for the participation in discussion 
+UC6 .-right-.> UC5 : <<extend>>
+@enduml
