@@ -1,0 +1,27 @@
+@startuml
+left to right direction
+
+actor "System Administrator" as Admin
+
+rectangle AudioNow {
+  usecase "Authenticate" as Auth
+  usecase "Inspect usage report" as Inspect
+  usecase "Select report options" as Options
+  usecase "Validate report options" as Validate
+  usecase "Generate listening statistics" as Generate
+  usecase "Export report" as Export
+  usecase "Select export format" as Format
+}
+
+Admin -- Inspect
+Admin -- Export
+
+Inspect ..> Auth : <<include>>
+Inspect ..> Options : <<include>>
+Inspect ..> Validate : <<include>>
+Inspect ..> Generate : <<include>>
+
+Export ..> Inspect : <<extend>>
+Export ..> Format : <<include>>
+
+@enduml

@@ -1,0 +1,33 @@
+@startuml BCEPodcastSpecialEvent
+
+actor Admin as "System Administrator"
+
+boundary ContentPage as "Content Management Page"
+control AuthenticationService as "Authentication Service"
+control ContentController as "Content Controller"
+boundary SearchResults as "Search Results"
+boundary ResultPage as "Result Page"
+boundary ValidationError as "Validation Error"
+entity Podcast as "Podcast"
+entity SpecialEvent as "Special Event"
+
+Admin -down-> (ContentPage)
+
+(ContentPage) -right-> (AuthenticationService)
+(AuthenticationService) -left-> (ContentPage)
+
+(ContentPage) -down-> (ContentController) : search / add / modify / remove
+
+(ContentController) -down-> (SearchResults)
+(ContentController) -down-> (ResultPage)
+(ContentController) -down-> (ValidationError)
+(ContentController) -down-> (Podcast)
+(ContentController) <-up- (Podcast)
+(ContentController) -down-> (SpecialEvent)
+(ContentController) <-up- (SpecialEvent)
+
+(SearchResults) -up-> Admin
+(ResultPage) -up-> Admin
+(ValidationError) -up-> Admin
+
+@enduml

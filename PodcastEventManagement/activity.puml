@@ -1,0 +1,40 @@
+@startuml ActivitypodcastSpecialEvent
+
+start
+:Open AudioNow administration;
+
+if (Authenticated?) then (No)
+  :Redirect to login page;
+  :Authenticate administrator;
+else (Yes)
+endif
+
+if (Create new podcast / event?) then (Yes)
+  :Enter podcast / event information;
+else (No)
+  repeat
+    :Search and view podcasts / special events;
+    backward:Display nothing found message;
+  repeat while (Results found?) is (No) not (Yes)
+  :Select podcast / event;
+  if (Modify or remove?) then (Modify)
+    :Edit information;
+  else (Remove)
+    :Select remove;
+  endif
+endif
+
+repeat
+  :Confirm modification;
+  if (Administrator confirms) then (No)
+    :Discard changes;
+    stop
+  else (Yes)
+  endif
+  backward:Highlight invalid fields and correct information;
+repeat while (Information valid?) is (No) not (Yes)
+
+:Display Operation completed successfully;
+stop
+
+@enduml

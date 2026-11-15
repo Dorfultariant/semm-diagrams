@@ -1,0 +1,38 @@
+@startuml
+left to right direction
+
+actor "System Administrator" as Admin
+
+rectangle AudioNow {
+  usecase "Authenticate" as Auth
+  usecase "Manage Podcasts" as ManageP
+  usecase "Manage Special Events" as ManageE
+  usecase "Add Podcast" as AddP
+  usecase "Create Special Events" as AddE
+  usecase "Search and view podcasts/special events" as Search
+  usecase "Modify / remove podcast" as CRUDp
+  usecase "Modify / remove event" as CRUDe
+  usecase "Confirm modification" as Confirm
+}
+
+Admin -- ManageP
+Admin -- ManageE
+Admin -- AddP
+Admin -- AddE
+
+AddP ..> Auth : <<include>>
+AddE ..> Auth : <<include>>
+
+ManageP ..> Auth : <<include>>
+ManageE ..> Auth : <<include>>
+ManageP ..> Search : <<include>>
+ManageE ..> Search : <<include>>
+
+CRUDp ..> ManageP : <<extend>>
+CRUDe ..> ManageE : <<extend>>
+
+Confirm ..> CRUDp : <<extend>>
+Confirm ..> CRUDe : <<extend>>
+Confirm ..> AddP : <<extend>>
+Confirm ..> AddE : <<extend>>
+@enduml

@@ -1,0 +1,20 @@
+@startuml CollaborationUsageReport
+
+actor Admin as "admin : System Administrator"
+
+boundary ReportPage as "reportPage : Report Page"
+control AuthenticationService as "authenticationService : Authentication Service"
+control ReportService as "reportService : Report Service"
+control ExportService as "exportService : Export Service"
+entity ListeningData as "listeningData : Listening Data"
+boundary ReportView as "reportView : Report View"
+
+Admin -> (ReportPage) : "1: openReportInterface()\n2: selectReportOptions()\n4: exportReport()\n<&arrow-right>"
+(ReportPage) -up-> (AuthenticationService) : "1.1: verifyAdmin()\n1.2: authenticationSuccess()\n<&arrow-top>"
+(ReportPage) -down-> (ReportService) : "2.1: requestReport()\n2.2: validateOptions()\n<&arrow-bottom>"
+(ReportService) -down-> (ListeningData) : "2.3: queryListeningData()\n2.4: listeningRecords()\n<&arrow-bottom>"
+(ReportService) --> (ReportView) : "2.5: showReport()\n<&arrow-bottom>"
+Admin <- (ReportView) : "3: viewReport()\n<&arrow-top>"
+(ReportPage) -right-> (ExportService) : "4.1: exportReport(format)\n4.2: exportedFile()\n<&arrow-right>"
+
+@enduml

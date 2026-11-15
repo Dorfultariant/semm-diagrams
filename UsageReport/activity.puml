@@ -1,0 +1,32 @@
+@startuml ActivityUsageReport
+
+start
+:Open report interface;
+
+if (Authenticated?) then (No)
+  :Redirect to login page;
+  :Authenticate administrator;
+else (Yes)
+endif
+
+repeat
+  :Select report options\n(period, media, report type);
+  :Validate options and generate listening statistics;
+  backward:Display invalid options, no data or error message;
+repeat while (Report created?) is (No) not (Yes)
+
+:Inspect report;
+
+if (Export report?) then (Yes)
+  repeat
+    :Select export format;
+    :Export report;
+    backward:Display export error message;
+  repeat while (Export successful?) is (No) not (Yes)
+  :Display export completed successfully;
+else (No)
+endif
+
+stop
+
+@enduml

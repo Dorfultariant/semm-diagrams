@@ -1,0 +1,32 @@
+@startuml BCEUsageReport
+
+actor Admin as "System Administrator"
+boundary ReportPage as "Report Page"
+control AuthenticationService as "Authentication Service"
+control ReportController as "Report Controller"
+boundary ReportView as "Report View"
+boundary ExportResult as "Export Result"
+boundary ErrorMessage as "Error Message"
+entity ListeningData as "Listening Data"
+entity UsageReport as "Usage Report"
+
+Admin -down-> (ReportPage)
+
+(ReportPage) -right-> (AuthenticationService)
+(AuthenticationService) -left-> (ReportPage)
+
+(ReportPage) -down-> (ReportController) : select options / inspect / export
+
+(ReportController) -down-> (ReportView)
+(ReportController) -down-> (ExportResult)
+(ReportController) -down-> (ErrorMessage)
+(ReportController) -down-> (ListeningData)
+(ReportController) <-up- (ListeningData)
+(ReportController) -down-> (UsageReport)
+(ReportController) <-up- (UsageReport)
+
+(ReportView) -up-> Admin
+(ExportResult) -up-> Admin
+(ErrorMessage) -up-> Admin
+
+@enduml

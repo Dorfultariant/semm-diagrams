@@ -1,0 +1,19 @@
+@startuml CollaborationPodcastSpecialEvent
+
+actor Admin as "admin : System Administrator"
+
+boundary ContentPage as "contentPage : Content Management Page"
+control AuthenticationService as "authenticationService : Authentication Service"
+control ContentService as "contentService : Content Service"
+entity Library as "library : Podcast / Event Library"
+boundary ResultPage as "resultPage : Result Page"
+
+Admin -> (ContentPage) : "1: openAdministration()\n2: searchContent()\n3: selectContent()\n4: modifyOrRemoveContent()\n5: confirmModification()\n<&arrow-right>"
+(ContentPage) -up-> (AuthenticationService) : "1.1: verifyAdmin()\n1.2: authenticationSuccess()\n<&arrow-top>"
+(ContentPage) -left-> (Library) : "2.1: queryContent()\n2.2: contentFound()\n<&arrow-bottom>"
+(ContentPage) -down-> (ContentService) : "5.1: saveChanges()\n<&arrow-bottom>"
+(ContentService) -down-> (Library) : "5.2: validateInformation()\n5.3: storeChanges()\n<&arrow-bottom>"
+(ContentService) --> (ResultPage) : "5.4: showResult()\n<&arrow-bottom>"
+Admin <- (ResultPage) : "6: viewResult()\n<&arrow-top>"
+
+@enduml
