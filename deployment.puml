@@ -1,0 +1,173 @@
+@startuml DeploymentDiagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+skinparam linetype polyline
+''skinparam linetype ortho
+
+title Deployment Diagram AudioNow
+
+'' NOTE: The following diagram utilizes a deployment diagram built for another school courseproject (Cloud Systems and Deployment)
+'' available at: https://github.com/Jepunen/lounastutka/blob/main/docs/architecture/diag_src/Deployment.puml
+
+' src: https://github.com/plantuml-stdlib/C4-PlantUML/blob/master/samples/C4CoreDiagrams.md
+' src: https://github.com/plantuml-stdlib/C4-PlantUML/blob/master/samples/C4_Deployment%20Diagram%20Sample%20-%20bigbankplc.puml
+
+' Deployment_Node(alias, label, ?type, ?descr, ?sprite, ?tags, ?link)
+' Container(alias, label, ?techn, ?descr, ?sprite, ?tags, ?link, ?baseShape)
+' ContainerDb(alias, label, ?techn, ?descr, ?sprite, ?tags, ?link, ?baseShape)
+
+' External User env (website)
+Deployment_Node(userdev, "Customer Device", "PC, Mobile, Console") {
+  Deployment_Node(wb, "Web Browser", "Chrome, Firefox, Safari, Edge, Console browser") {
+      Container(wc, "Web Client", "React", "Runs in the user's browser and interacts with the backend API.")
+  }
+  Deployment_Node(mdev, "Dedicated Application", "Android, IOS") {
+    Container(App, "Client Interface", "React Native", "Runs in the user's mobile device and interacts with the backend API.")
+  }
+}
+
+'' Hetzner object storage can be used for the podcast storage and the content can be cached by the CDN service provide to be 
+'' distributed to the users in various location through the edge CDN caches.
+'' S3 src: https://www.hetzner.com/storage/object-storage/
+Deployment_Node(hetznerStorage, "Hetzner Object Storage S3 Instance", "50TB") {
+  ContainerDb(podcastStorage, "Podcast Storage", "Object Storage", "Used as storage for the podcast content such as images, audio and other downloadable content, served by the CDNs to customers.")
+}
+
+Deployment_Node(cdnS, "Cloudflare Content Delivery Network", "Global/Europe Edge Network") {
+  Container(cdn, "Cloudflare CDN", "", "Provides media content edge caching for customers.")
+}
+
+'' These are legacy systems so they are built with JAVA and not dockerized
+Deployment_Node(mediafunExistSystem, "Mediafun Existing System", "External Mediafun systems") {
+  Container(wh, "Warehouse Service", "Java", "Handles Mediafun marketplace order physical merchandise processing.")
+  ContainerDb(whDb, "Warehouse Database", "PostgreSQL", "Contains inventory information of the physical merchandise such as availability and product catalog.")
+  Container(orderMan, "Order Management Service", "Java", "Handles Mediafun marketplace purchase processing with order details.")
+  Container(billMan, "Mediafun Billing Management Service", "Java", "Handles Mediafun billing and customer processes.")
+}
+
+'' External payment processing service
+'' European: https://europeanstack.com/best/best-eu-payment-processors
+Deployment_Node(pays, "Payment Service Provider", "") {
+  Container(payGate, "Payment Gateway", "Klarna, Mollie", "Provides the payment gateway for secured banking transactions.")
+}
+
+'' The idea is that this setup is instantiated as docker swarm, so having multiple instances allows concurrent operation and servicing multiple users
+Deployment_Node(hetzner, "Hetzner VPS Instance", "16 vCPUs, 64GB RAM, 4TB SSD") {
+    
+    '' Deployable swarm
+    Deployment_Node(swarm, "Docker Swarm", "Container Environment") {
+        '' Should this be an entry to swarm instances rather than a swarm component?? Probably a container within swarm instance
+        Deployment_Node(revprox, "Reverse Proxy", "Docker Service") {
+            Container(traefik, "Traefik", "Traefik", "A HTTPS endpoint and loadbalancer used to redirect to docker instances")
+        }
+
+        '' Served by the instance unlike the dedicated application
+        Deployment_Node(webfrontend, "Frontend Service", "Docker Service") {
+            Container(fe, "Frontend Microservice", "Nginx + React", "Docker service that serves the static files for client web browser")
+        }
+
+        Deployment_Node(beS, "Backend Service", "Docker Service") {
+            Container(be, "Backend Microservice", "Node.js, Express", "API service routes, authentication and microservice communication.")
+        }
+
+        '' Advertisement microsservice
+        Deployment_Node(adS, "Advertisement Service", "Docker Service") {
+            Container(adv, "Advertisement Microservice", "Node.js, Express", "Advertisement API service routes for showing advertisement and management.")
+        }
+       
+        '' Depending on the audio architecture openVidu or Livekit
+        '' https://github.com/livekit/livekit  <-- Probably implies TURN/STUN service to really work
+        '' https://openvidu.io/
+        Deployment_Node(voiceRoomS, "Livekit WebRTC Service", "Docker Service") {
+            Container(vrs, "Livekite VoiceRoom Microservice", "Livekit, WebRTC", "Client-to-Client real-time communication service.")
+        }
+
+        '' Redis or similar caching for active sessions and information upkeep for faster queries (real-time communication etc.)
+          
+        Deployment_Node(monitoringNode, "Observator Stack", "Docker Services") {
+            Container(obsStack, "Prometheus, Loki, Grafana", "Prometheus, Loki, Grafana", "Collects metrics from other internal services for monitoring. Connects to each internal service instance.")
+            ''Container(prometheus, "Prometheus", "Prometheus", "Collects metrics from other services for monitoring.")
+            ''Container(loki, "Loki", "Loki", "Logger service to aggregate log data from other services.")
+            ''Container(grafana, "Grafana", "Grafana", "Vizualisation for the collected metrics and logs.")
+        }
+    }
+}
+
+Deployment_Node(hetznerDB, "Hetzner Data Instance", "") {
+    '' WARNING: THESE COULD / SHOULD PROBABLY BE OUTISDE OF THE SWARM AS THEY ARE NOT REALLY DISPOSABLE LIKE THE OTHER SERVICES
+    '' Used for the relational information, NOTE: the payment and purchase related information are contained within the existing MediaFUn system
+    Deployment_Node(dbNode, "Relational Database Service", "Docker Service") {
+        ContainerDb(dbMain, "PostgreSQL Database", "PostgreSQL", "Authentication, user profile, subscription, favorite, content creator information and podcast metadata.")
+    }
+    Deployment_Node(adDBNode, "Relational Database Service", "Docker Service") {
+        ContainerDb(dbAdv, "Advertisement Database", "PostgreSQL", "User preference and statistics for advertisement")
+    }
+    Deployment_Node(lyticsDBNode, "Relational Database Service", "Docker Service") {
+        ContainerDb(dbAnal, "Analytics and Report Database", "PostgreSQL", "Stores internal usage analytics and audit logging")
+    }
+}
+
+'' Separate backup storage instance
+Deployment_Node(hetznerBackupDB, "Hetzner Storage Box Instance", "") {
+    ContainerDb(dbBU, "Backup Storage Instance", "", "Contains backups of the main databases in a separate storage.")
+}
+
+' Rel(personAlias, containerAlias, "Label", "Optional Technology")
+
+'' Dashed line for the external dependencies (mediafun, CDN)
+AddRelTag("external", $lineStyle = DashedLine(), $legendText = "External or third party connection")
+
+'' Routing between web client, app, traefik and microservices
+Rel_R(userdev, revprox, "Web and API requests")
+Rel(revprox, fe, "Serves web frontend")
+Rel(revprox, beS, "Routes API requests")
+''Rel_L(userdev, traefik, "Web and API requests")
+''Rel_R(traefik, fe, "Serves web frontend")
+''Rel_D(traefik, beS, "Routes API requests")
+
+Rel(revprox, voiceRoomS, "Routes WebRTC sessions")
+Rel(revprox, adS, "Routes advertisement sessions")
+Rel(adS, hetznerDB, "Queries advertisement info")
+
+'' Client gets the route to CDN which provides the media
+''Rel(App, cdn, "Queries podcast content")
+''Rel(App, cdn, "Queries podcast content")
+Rel(userdev, cdnS, "Session based queries for podcast content", $tags = "external")
+
+
+'' The main database probably should handle the archive process to the backup database
+Rel(hetznerDB, hetznerBackupDB, "Scheduled backups")
+
+'' Routing from backend to databases (CDNs)
+Rel(beS, hetznerDB, "Queries user information")
+Rel(beS, hetznerStorage, "Updates podcast content", $tags = "external")
+
+'' backend and other microservice routing
+Rel_U(beS, adS, "")
+Rel_U(beS, voiceRoomS, "Provides user sessions")
+
+Rel(beS, pays, "Requests payment handling", $tags = "external")
+
+'' CDN + Hetzenr storage connection
+Rel(cdnS, hetznerStorage, "Requests content from", $tags = "external")
+
+'' Legacy connections
+''Rel(beS, orderMan, "Creates orders")
+''Rel(beS, billMan, "Reports purchases")
+Rel_U(beS, mediafunExistSystem, "Order, billing and warehouse requests", $tags = "external")
+
+Rel(orderMan, wh, "Requests inventory information")
+Rel(wh, whDb, "Queries inventory")
+
+'' Spy stack (unconnected due to relationship mess)
+''Rel_L(monitoringNode, beS, "Collects metrics and logs")
+''Rel_R(monitoringNode, adS, "Collects metrics and logs")
+
+''Rel_U(grafana, loki, "Aggregates logs")
+''Rel_U(grafana, prometheus, "Aggregates metrics")
+
+
+SHOW_LEGEND()
+
+
+@enduml
