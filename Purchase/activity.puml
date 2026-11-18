@@ -1,5 +1,7 @@
 @startuml ActivityMarketplacePurchase
 
+title Activity Diagram Marketplace Purchase
+
 start
 
 :Navigate To Marketplace;
