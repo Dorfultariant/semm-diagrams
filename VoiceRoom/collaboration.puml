@@ -1,4 +1,6 @@
-@startuml CollaborationVoiceRoom
+@startuml CommunicationVoiceRoom
+
+title Communication Diagram Voiceroom
 
 '' Last example at the bottom of the forum, src: https://forum.plantuml.net/7500/how-can-i-create-collaboration-diagram
 

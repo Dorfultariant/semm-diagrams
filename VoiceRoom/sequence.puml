@@ -1,4 +1,4 @@
-@startuml CommunicationVoiceRoom
+@startuml SequenceVoiceRoom
 
 actor User as U
 
