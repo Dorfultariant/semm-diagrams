@@ -1,4 +1,7 @@
 @startuml
+
+title Use-case Diagram Inspectof Usage Report
+
 left to right direction
 
 actor "System Administrator" as Admin

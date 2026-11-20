@@ -1,5 +1,7 @@
 @startuml CollaborationPodcastSpecialEvent
 
+title Communication Diagram Podcast and Special Event Management
+
 actor Admin as "admin : System Administrator"
 
 boundary ContentPage as "contentPage : Content Management Page"

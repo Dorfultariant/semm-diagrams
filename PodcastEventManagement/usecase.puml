@@ -1,4 +1,7 @@
 @startuml
+
+title Use-case Diagram Podcast and Special Event Management
+
 left to right direction
 
 actor "System Administrator" as Admin

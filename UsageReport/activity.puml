@@ -1,5 +1,7 @@
 @startuml ActivityUsageReport
 
+title Activity Diagram Inspectof Usage Report
+
 start
 :Open report interface;
 

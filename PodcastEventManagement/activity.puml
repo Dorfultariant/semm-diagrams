@@ -1,5 +1,7 @@
 @startuml ActivitypodcastSpecialEvent
 
+title Activity Diagram Podcast and Special Event Management
+
 start
 :Open AudioNow administration;
 

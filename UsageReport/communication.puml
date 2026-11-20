@@ -1,5 +1,7 @@
 @startuml CollaborationUsageReport
 
+title Communication Diagram Inspectof Usage Report
+
 actor Admin as "admin : System Administrator"
 
 boundary ReportPage as "reportPage : Report Page"
