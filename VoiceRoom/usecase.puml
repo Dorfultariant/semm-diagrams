@@ -1,5 +1,7 @@
 @startuml UseCaseVoiceRoom
 
+title Use-case Diagram Voiceroom
+
 left to right direction
 
 actor "User" as U

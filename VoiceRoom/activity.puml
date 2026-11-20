@@ -1,5 +1,7 @@
 @startuml ActivityVoiceRoom
 
+title Activity Diagram Voiceroom
+
 start
 
 :Open AudioNow;

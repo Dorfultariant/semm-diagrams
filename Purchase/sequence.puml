@@ -1,4 +1,4 @@
-@startuml CommunicationMarketplacePurchase
+@startuml SequenceMarketplacePurchase
 
 actor User as U
 
